@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Dlogon\TranslationManager\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TranslationManagerCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'translation-manager';
 
     public $description = 'My command';
 
