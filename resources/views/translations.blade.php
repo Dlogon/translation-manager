@@ -1,4 +1,4 @@
-@extends('translation-manager::layouts.translation-layout')
+@extends('translation-manager::translation-layout')
 
 @section('header')
     @parent

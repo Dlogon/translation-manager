@@ -33,7 +33,7 @@
 
         <div class="container w-full mx-auto">
             <div class="w-full px-4 md:px-0 md:mt-8 mb-16 text-gray-800 leading-normal">
-                @include("translation-manager::layouts.navigation")
+                @include("translation-manager::navigation")
                 <!-- Page Heading -->
                 <header class="shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
