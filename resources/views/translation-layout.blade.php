@@ -54,8 +54,7 @@
 
             </div>
             <div class="tailwindAlert">
-                @tailwind_alerts
-                <p></p>
+                <x-tailwindalerts::tailwind-alert/>
             </div>
         </div>
     @stack("js")
