@@ -1,7 +1,8 @@
 <?php
 
+use Dlogon\TranslationManager\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
-use Dlogon\TranslationManager\Controller;
+use Dlogon\TranslationManager\Http\Controllers\TranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,18 +15,31 @@ use Dlogon\TranslationManager\Controller;
 |
 */
 
-Route::get('/', [Controller::class, 'index'])->name("index");
+$routePrefixName = config("translation-manager.route.prefix", "translations");
 
-Route::get('/api/langs', [Controller::class, 'getLangs']);
-Route::post('/langs', [Controller::class, 'addLang']);
-Route::get('/keys/{group?}', [Controller::class, 'getGroupKeys']);
-Route::post('/traslation', [Controller::class, 'addTranslation']);
-Route::put('/traslation', [Controller::class, 'updateTranslation']);
-Route::post('/traslations', [Controller::class, 'createTranslationsFiles']);
-Route::post('/key', [Controller::class, 'addKey']);
+Route::name("$routePrefixName.")->group(function() {
+    Route::get('/', [TranslationController::class, 'index'])->name("index");
 
-Route::get('/modeltranslations', [Controller::class, 'modelTranslations'])->name("modeltranslations");
+    Route::get('/api/langs', [TranslationController::class, 'getLangs'])->name("lang");
+    Route::post('/langs', [TranslationController::class, 'addLang'])->name("lang.store");
+    Route::get('/keys/{group?}', [TranslationController::class, 'getGroupKeys'])->name("group.keys");
+    Route::post('/traslation', [TranslationController::class, 'addTranslation'])->name("addTranslation");
+    Route::put('/traslation', [TranslationController::class, 'updateTranslation']);
+    Route::post('/traslations', [TranslationController::class, 'createTranslationsFiles'])->name("generate");
+    Route::post('/key', [TranslationController::class, 'addKey'])->name("key.store");;
 
-Route::post('/modeltranslationsgroups', [Controller::class, 'modelTransationGroups'])->name("modeltranslationsgroups");
+    Route::get('/modeltranslations', [TranslationController::class, 'modelTranslations'])->name("modeltranslations");
+    Route::post('/modeltranslationsgroups', [TranslationController::class, 'modelTransationGroups'])->name("modeltranslationsgroups");
+
+    // GROUPS
+
+    Route::resource("group", GroupController::class);
+
+    // Route::get('/groups', [GroupController::class, 'index'])->name("groups");
+    // Route::get('/groups', [GroupController::class, 'index'])->name("groups");
+});
+
+
+
 
 

@@ -15,7 +15,7 @@
     </div>
 
     <div class="flex flex-row items-center">
-        <form action="modeltranslationsgroups" method="POST">
+        <form action="{{route(config('translation-manager.route.prefix').'.modeltranslationsgroups')}}" method="POST">
             @csrf
             <button
                 class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-700 border-teal-500 hover:border-teal-700 text-lg border-4 text-white py-3 px-3 rounded"

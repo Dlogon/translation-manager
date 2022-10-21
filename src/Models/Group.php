@@ -10,6 +10,11 @@ class Group extends Model
     const DEFAULT_TYPE = "default";
     const MODEL_TYPE = "model";
 
+    protected $fillable = [
+        "name",
+        "type"
+    ];
+
     public function translations()
     {
         return $this->hasMany(Translation::class);

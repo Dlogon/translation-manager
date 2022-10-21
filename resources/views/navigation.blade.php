@@ -24,14 +24,19 @@
         <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-gray-900 z-20" id="nav-content">
             <ul class="list-reset lg:flex flex-1 items-center px-4 md:px-0">
                 <li class="mr-6 my-2 md:my-0">
-                    <x-translation-manager::responsive-nav-link :href="route('index')" :active="request()->routeIs('index')">
+                    <x-translation-manager::responsive-nav-link :href="route(config('translation-manager.route.prefix').'.index')" :active="request()->routeIs(config('translation-manager.route.prefix').'.index')">
                         <i class="fas fa-tasks fa-fw mr-3"></i>traslations
                     </x-translation-manager::responsive-nav-link>
                 </li>
              
                 <li class="mr-6 my-2 md:my-0">
-                    <x-translation-manager::responsive-nav-link :href="route('modeltranslations')" :active="request()->routeIs('modeltranslations')">
+                    <x-translation-manager::responsive-nav-link :href="route(config('translation-manager.route.prefix').'.modeltranslations')" :active="request()->routeIs(config('translation-manager.route.prefix').'.modeltranslations')">
                         <i class="fas fa-tasks fa-fw mr-3"></i>Model traslations
+                    </x-translation-manager::responsive-nav-link>
+                </li>
+                <li class="mr-6 my-2 md:my-0">
+                    <x-translation-manager::responsive-nav-link :href="route(config('translation-manager.route.prefix').'.group.index')" :active="request()->routeIs(config('translation-manager.route.prefix').'.group.index')">
+                        <i class="fas fa-tasks fa-fw mr-3"></i>Groups
                     </x-translation-manager::responsive-nav-link>
                 </li>
             </ul>

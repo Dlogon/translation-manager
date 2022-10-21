@@ -1,8 +1,7 @@
 <?php
 
-namespace Dlogon\TranslationManager;
+namespace Dlogon\TranslationManager\Http\Controllers;
 
-use Illuminate\Routing\Controller as BaseController;
 use Dlogon\TranslationManager\Models\Group;
 use Dlogon\TranslationManager\Models\Translation;
 use Dlogon\TranslationManager\Models\Languaje;
@@ -12,16 +11,22 @@ use Illuminate\Http\Request;
 use Dlogon\TailwindAlerts\Facades\TailwindAlerts;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Redis;
 
-class Controller extends BaseController
+use function Pest\Laravel\swap;
+
+class TranslationController extends Controller
 {
     protected $app;
     protected $files;
+    private $langPath;
 
     public function __construct(Application $app, Filesystem $files)
     {
         $this->app = $app;
         $this->files = $files;
+        $this->langPath = $this->app['path.lang'];
     }
 
     public function index()
@@ -43,7 +48,7 @@ class Controller extends BaseController
         $lang->name = $request->lang_name;
         $lang->save();
         TailwindAlerts::addSessionMessage("Lang added succesfully", TailwindAlerts::SUCCESS);
-        return redirect()->back();
+        return Redirect::back();
     }
 
     public function getGroupKeys(Request $request, $group = null)
@@ -78,7 +83,7 @@ class Controller extends BaseController
         $traslation->languaje_id = $request->languaje_id;
         $traslation->group_id = $request->group_id;
         $traslation->key = $request->key;
-        $traslation->value = $request->value;
+        $traslation->value = $request->value ?? " ";
         $traslation->save();
 
         TailwindAlerts::addSessionMessage("Translation updated successfully", TailwindAlerts::SUCCESS);
@@ -86,37 +91,76 @@ class Controller extends BaseController
         return $traslation;
     }
 
-    public function createTranslationsFiles()
+    private function generatePHPFiles($groups, $langs)
     {
-        $groups = Group::all();
-        $langs = Languaje::all();
-        $langPath = $this->app['path.lang'];
-
-    foreach($langs as $lang)
-    {
-        $langName = $lang->name;
-        $langFolder =  rtrim($langPath.DIRECTORY_SEPARATOR.$langName, DIRECTORY_SEPARATOR);
-        if (! is_dir($langFolder)) {
-            mkdir($langFolder, 0777, true);
-        }
-
-        foreach($groups as $group)
+        foreach($langs as $lang)
         {
-            $path = $langPath.DIRECTORY_SEPARATOR.$langName.DIRECTORY_SEPARATOR.$group->group_name.'.php';
-            $translations =  $group->translations()->where("languaje_id", $lang->id)->get(["key", "value"])->pluck("value", "key")->toArray();
-            $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
+            $langName = $lang->name;
+            $langFolder =  rtrim($this->langPath.DIRECTORY_SEPARATOR.$langName, DIRECTORY_SEPARATOR);
+            if (! is_dir($langFolder)) {
+                mkdir($langFolder, 0777, true);
+            }
+
+            foreach($groups as $group)
+            {
+                $path = $this->langPath.DIRECTORY_SEPARATOR.$langName.DIRECTORY_SEPARATOR.$group->name.'.php';
+                $translations =  $group->translations()->where("languaje_id", $lang->id)->get(["key", "value"])->pluck("value", "key")->toArray();
+                $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
+                try {
+                    $pass = $this->files->put($path, $output);
+
+                } catch (\Throwable $th) {
+                    throw $th;
+                }
+
+            }
+        }
+    }
+
+    private function generateJsonFiles($groups, $langs)
+    {
+        foreach($langs as $lang)
+        {
+            $langName = $lang->name;
+            $path = $this->langPath.'/'.$langName.'.json';
+            $translations = [];
+
+            foreach($groups as $group)
+            {
+                $translations["//GROUP".$group->name] = "///////////////GROUP-$group->name///////////////////////";
+                $groupTraslations = $group->translations()->where("languaje_id", $lang->id)->get(["key", "value"])->pluck("value", "key")->toArray();
+
+                $translations+=$groupTraslations;
+            }
+            $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
             try {
                 $pass = $this->files->put($path, $output);
 
             } catch (\Throwable $th) {
                 throw $th;
             }
-
         }
     }
-    TailwindAlerts::addSessionMessage("Translations files created successfully", TailwindAlerts::SUCCESS);
 
-    return redirect()->back();
+    public function createTranslationsFiles(Request $request)
+    {
+        $groups = Group::all();
+        $langs = Languaje::all();
+        $langFileType = $request->lang_file_type;
+
+        switch($langFileType)
+        {
+            case "PHP": default:
+                $this->generatePHPFiles($groups, $langs);
+                break;
+            case "JSON":
+                $this->generateJsonFiles($groups, $langs);
+                break;
+        }
+
+        TailwindAlerts::addSessionMessage("Translations files created successfully", TailwindAlerts::SUCCESS);
+
+        return redirect()->back();
     }
 
     public function addKey(Request $request)
@@ -155,16 +199,16 @@ class Controller extends BaseController
             foreach($modelsNamesPace as $model)
             {
                 $group = new Group();
-                $group->group_name = $model;
-                $group->group_type = Group::MODEL_TYPE;
+                $group->name = $model;
+                $group->type = Group::MODEL_TYPE;
                 $group->save();
                 $modelNamespace = $namespace.$model;
 
                 $modelInstance = new $modelNamespace;
                 $table = $modelInstance->getTable();
 
-                $ignoredModelColumns = config("traslations.ignore_model_columns")[$table] ?? [];
-                $ignoredColumns = config("traslations.ignore_columns", ["id"]);
+                $ignoredModelColumns = config("translation-manager.ignore_model_columns")[$table] ?? [];
+                $ignoredColumns = config("translation-manager.ignore_columns", ["id"]);
                 $tableColumns = Schema::getColumnListing($table);
                 $columns = array_diff($tableColumns, $ignoredColumns, $ignoredModelColumns);
                 foreach($columns as $column)
@@ -179,7 +223,8 @@ class Controller extends BaseController
             }
 
         }
-        TailwindAlerts::addSessionMessage("model groups created successfully", TailwindAlerts::SUCCESS);
+        TailwindAlerts::addSessionMessage("model group and keys created successfully", TailwindAlerts::SUCCESS);
+        return redirect()->back();
 
     }
 
