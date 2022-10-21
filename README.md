@@ -17,24 +17,24 @@ You can install the package via composer:
 composer require dlogon/translation-manager
 ```
 
-You can run the migrations with:
+You can run the migrations and optional publish the migrations with:
 
 ```bash
-php artisan vendor:publish --tag="translation-manager-migrations"
+php artisan vendor:publish --provider="Dlogon\TranslationManager\TranslationManagerServiceProvider" --tag="migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="translation-manager-config"
+php artisan vendor:publish --provider="Dlogon\TranslationManager\TranslationManagerServiceProvider" --tag="config"
 ```
 
 
 Optionally, you can publish the views using
 
 ```bash
-php artisan vendor:publish --tag="translation-manager-views"
+php artisan vendor:publish --provider="Dlogon\TranslationManager\TranslationManagerServiceProvider" --tag="views"
 ```
 
 ## Usage
