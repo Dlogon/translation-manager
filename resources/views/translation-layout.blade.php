@@ -11,8 +11,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
         <style>
             .bg-black-alt {
@@ -29,7 +28,7 @@
 
         </style>
     </head>
-    <body class="bg-black-alt font-sans leading-normal tracking-normal">
+    <body class="bg-black-alt font-sans leading-normal tracking-normal w-full">
 
         <div class="container w-full mx-auto">
             <div class="w-full px-4 md:px-0 md:mt-8 mb-16 text-gray-800 leading-normal">
