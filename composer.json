@@ -17,8 +17,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "dlogon/tailwind-alerts": "^0.2",
-        "illuminate/contracts": "^9.0"
+        "dlogon/tailwind-alerts": "^0.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.8",
