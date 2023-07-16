@@ -22,6 +22,13 @@ class Translation extends Model
         "group"
     ];
 
+    public function getTable()
+    {
+        $routePrefixName = config("translation-manager.db_prefix", "translations");
+
+        return $routePrefixName . "_translations";
+    }
+
     public function getLanguajeAttribute()
     {
         return $this->related_lang->name ?? null;

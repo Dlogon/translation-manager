@@ -198,10 +198,15 @@ class TranslationController extends Controller
         {
             foreach($modelsNamesPace as $model)
             {
-                $group = new Group();
-                $group->name = $model;
-                $group->type = Group::MODEL_TYPE;
-                $group->save();
+                $group = Group::where("name",$model )->first();
+                if(!$group)
+                {
+                    $group = new Group();
+                    $group->name = $model;
+                    $group->type = Group::MODEL_TYPE;
+                    $group->save();
+                }
+
                 $modelNamespace = $namespace.$model;
 
                 $modelInstance = new $modelNamespace;

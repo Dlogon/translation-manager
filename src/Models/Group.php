@@ -15,6 +15,13 @@ class Group extends Model
         "type"
     ];
 
+    public function getTable()
+    {
+        $routePrefixName = config("translation-manager.db_prefix", "translations");
+
+        return $routePrefixName . "_groups";
+    }
+
     public function translations()
     {
         return $this->hasMany(Translation::class);

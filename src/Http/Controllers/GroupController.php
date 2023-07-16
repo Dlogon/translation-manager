@@ -42,6 +42,17 @@ class GroupController extends Controller
         $groupName = $request->name;
         $groupType = Group::DEFAULT_TYPE;
 
+        $dbPrefix = config("translation-manager.db_prefix", "translations");
+
+        $validated = $request->validate([
+            'name' => "required|unique:{$dbPrefix}_groups,name",
+        ]);
+
+        if(!$validated)
+        {
+            TailwindAlerts::addSessionMessage("Group already added", TailwindAlerts::ERROR);
+        }
+
         Group::create([
             "name" => $groupName,
             "type" => $groupType
