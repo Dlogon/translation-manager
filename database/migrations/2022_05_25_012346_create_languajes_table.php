@@ -13,7 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('languajes', function (Blueprint $table) {
+        $routePrefixName = config("translation-manager.db_prefix", "translations");
+        Schema::create($routePrefixName.'_languajes', function (Blueprint $table) {
             $table->id();
             $table->string("name",4);
             $table->timestamps();

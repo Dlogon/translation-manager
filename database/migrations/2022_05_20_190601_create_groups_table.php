@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('groups', function (Blueprint $table) {
+        $routePrefixName = config("translation-manager.db_prefix", "translations");
+
+        Schema::create($routePrefixName.'_groups', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->string("name")->unique();
             $table->string("type");
             $table->timestamps();
         });
