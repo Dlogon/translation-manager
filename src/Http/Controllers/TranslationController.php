@@ -249,9 +249,10 @@ class TranslationController extends Controller
         $models = [];
         $modelsPaths = config("traslations.models_folder", ["App\\Models\\" => app_path('Models')]);
 
+
         foreach ($modelsPaths as $namespace => $path) {
             $models[$namespace] = [];
-            $modelFiles = File::allFiles($path);
+            $modelFiles = File::files($path);
             foreach ($modelFiles as $modelFile) {
                 $modelName = $modelFile->getFilenameWithoutExtension();
                 $models[$namespace][] =  $modelName;
